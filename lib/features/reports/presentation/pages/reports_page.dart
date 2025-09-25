@@ -1,1 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/report_bloc.dart';
+import '../bloc/report_event.dart';
+import '../bloc/report_state.dart';
+import '../widgets/report_list_item.dart';
+import 'package:go_router/go_router.dart';
 
+class ReportsPage extends StatelessWidget {
+  const ReportsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<ReportBloc>();
+
+    // ✅ Solo cargar reportes si aún no hay datos
+    if (bloc.state is ReportsInitial) {
+      bloc.add(FetchReports());
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Reportes')),
+      body: BlocBuilder<ReportBloc, ReportState>(
+        builder: (context, state) {
+          if (state is ReportsLoading && bloc.state is ReportsInitial) {
+            // Spinner solo en carga inicial
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is ReportsLoaded) {
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.reports.length,
+                    itemBuilder: (context, index) {
+                      final report = state.reports[index];
+                      return GestureDetector(
+                        onTap: () =>
+                            context.go('/report_detail/${report.reportNumber}'),
+                        child: ReportListItem(report: report),
+                      );
+                    },
+                  ),
+                ),
+                if (!state.isLastPage)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () => bloc.add(
+                        LoadMoreReports(),
+                      ), // Cargar siguiente página
+                      child: const Text('Cargar más'),
+                    ),
+                  ),
+              ],
+            );
+          } else if (state is ReportsError) {
+            return Center(child: Text(state.message));
+          }
+
+          // Estado inicial o vacío
+          return const SizedBox();
+        },
+      ),
+    );
+  }
+}
