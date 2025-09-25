@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
 import '../network/dio_client.dart';
 import '../../features/reports/data/datasources/report_remote_datasource.dart';
 import '../../features/reports/data/repositories/report_repository_impl.dart';
@@ -10,18 +11,18 @@ import '../../features/reports/presentation/bloc/report_bloc.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  // Dio
-  sl.registerLazySingleton(() => DioClient.getClient());
+  // Dio client
+  sl.registerLazySingleton<Dio>(() => DioClient.getClient());
 
-  // DataSource
+  // Data sources
   sl.registerLazySingleton<ReportRemoteDataSource>(
     () => ReportRemoteDataSourceImpl(client: sl()),
   );
 
-  // Repository
+  // Repositories
   sl.registerLazySingleton<ReportRepository>(() => ReportRepositoryImpl(sl()));
 
-  // UseCases
+  // Use cases
   sl.registerLazySingleton(() => GetReportsPaginated(sl()));
   sl.registerLazySingleton(() => GetReportDetail(sl()));
 

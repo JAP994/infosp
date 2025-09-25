@@ -1,3 +1,4 @@
+// lib/features/reports/data/datasources/report_remote_datasource.dart
 import 'package:dio/dio.dart';
 import '../models/report_model.dart';
 import '../models/report_page_model.dart';
@@ -15,7 +16,7 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
   @override
   Future<ReportPageModel> getReportsPaginated(int page, int size) async {
     final response = await client.get(
-      '/sistem/api/v1/reports',
+      '/reports',
       queryParameters: {'page': page, 'size': size},
     );
     return ReportPageModel.fromJson(response.data);
@@ -23,7 +24,7 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
 
   @override
   Future<ReportModel> getReportByNumber(String reportNumber) async {
-    final response = await client.get('/sistem/api/v1/reports/$reportNumber');
+    final response = await client.get('/reports/$reportNumber');
     return ReportModel.fromJson(response.data);
   }
 }

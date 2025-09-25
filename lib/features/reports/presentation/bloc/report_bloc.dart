@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/report.dart';
-import '../../domain/usecases/get_reports_paginated.dart';
-import '../../domain/usecases/get_report_detail.dart';
+import 'package:infosp/features/reports/domain/entities/report.dart';
+import 'package:infosp/features/reports/domain/usecases/get_report_detail.dart';
+import 'package:infosp/features/reports/domain/usecases/get_reports_paginated.dart';
 import 'report_event.dart';
 import 'report_state.dart';
 

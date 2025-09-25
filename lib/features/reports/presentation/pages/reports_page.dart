@@ -13,7 +13,7 @@ class ReportsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<ReportBloc>();
 
-    // ✅ Solo cargar reportes si aún no hay datos
+    // Disparar la carga solo si el estado es inicial
     if (bloc.state is ReportsInitial) {
       bloc.add(FetchReports());
     }
@@ -23,7 +23,6 @@ class ReportsPage extends StatelessWidget {
       body: BlocBuilder<ReportBloc, ReportState>(
         builder: (context, state) {
           if (state is ReportsLoading && bloc.state is ReportsInitial) {
-            // Spinner solo en carga inicial
             return const Center(child: CircularProgressIndicator());
           } else if (state is ReportsLoaded) {
             return Column(
@@ -34,8 +33,9 @@ class ReportsPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final report = state.reports[index];
                       return GestureDetector(
-                        onTap: () =>
-                            context.go('/report_detail/${report.reportNumber}'),
+                        onTap: () => context.push(
+                          '/report_detail/${report.reportNumber}',
+                        ),
                         child: ReportListItem(report: report),
                       );
                     },
@@ -45,9 +45,7 @@ class ReportsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                      onPressed: () => bloc.add(
-                        LoadMoreReports(),
-                      ), // Cargar siguiente página
+                      onPressed: () => bloc.add(LoadMoreReports()),
                       child: const Text('Cargar más'),
                     ),
                   ),
@@ -57,8 +55,7 @@ class ReportsPage extends StatelessWidget {
             return Center(child: Text(state.message));
           }
 
-          // Estado inicial o vacío
-          return const SizedBox();
+          return const SizedBox(); // Estado inicial vacío
         },
       ),
     );

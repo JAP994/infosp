@@ -8,22 +8,10 @@ class ReportListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Número: ${report.reportNumber}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text('Ubicación: ${report.detectedLocationUnit}'),
-            const SizedBox(height: 4),
-            Text('Descripción: ${report.detailedDescription}'),
-          ],
-        ),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: ListTile(
+        title: Text(report.reportNumber),
+        subtitle: Text(report.detectedLocationUnit),
       ),
     );
   }

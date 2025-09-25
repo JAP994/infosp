@@ -14,7 +14,7 @@ class ReportDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<ReportBloc>();
 
-    // ✅ Cargar detalle solo si aún no está cargado
+    // Cargar detalle solo si aún no lo tenemos
     bloc.add(FetchReportDetail(reportNumber));
 
     return Scaffold(
@@ -22,15 +22,7 @@ class ReportDetailPage extends StatelessWidget {
         title: const Text('Detalle del Reporte'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // Intentar pop; si no hay historial, ir a ReportsPage y recargar
-            if (GoRouter.of(context).canPop()) {
-              context.pop();
-            } else {
-              bloc.add(FetchReports());
-              context.go('/');
-            }
-          },
+          onPressed: () => context.pop(), // Regresar manteniendo la lista
         ),
       ),
       body: BlocBuilder<ReportBloc, ReportState>(
@@ -39,17 +31,13 @@ class ReportDetailPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ReportDetailLoaded) {
             final report = state.report;
-
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: ListView(
                 children: [
                   Text(
                     'Número: ${report.reportNumber}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text('Ubicación: ${report.detectedLocationUnit}'),
@@ -69,6 +57,7 @@ class ReportDetailPage extends StatelessWidget {
           } else if (state is ReportsError) {
             return Center(child: Text(state.message));
           }
+
           return const SizedBox();
         },
       ),

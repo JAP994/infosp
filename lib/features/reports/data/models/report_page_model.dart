@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'report_model.dart';
 import '../../domain/entities/report_page.dart';
+import 'report_model.dart';
 
 part 'report_page_model.g.dart';
 

@@ -1,4 +1,4 @@
-import '../../domain/entities/report.dart';
+import 'package:infosp/features/reports/domain/entities/report.dart';
 
 abstract class ReportState {}
 
