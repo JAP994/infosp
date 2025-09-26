@@ -61,10 +61,14 @@ class ReportsPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.pushNamed(CreateReportPage.name).then((_) {
+        onPressed: () async {
+          // navegación con async/await
+          await context.pushNamed(CreateReportPage.name);
+
+          // comprobamos que el contexto sigue montado
+          if (context.mounted) {
             context.read<ReportBloc>().add(FetchReports());
-          });
+          }
         },
         tooltip: 'Nuevo reporte',
         child: const Icon(Icons.add),

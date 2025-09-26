@@ -6,8 +6,9 @@ class DioClient {
     return Dio(
       BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 25),
-        receiveTimeout: const Duration(seconds: 25),
+        // 🔹 Sin límite de tiempo
+        connectTimeout: Duration.zero,
+        receiveTimeout: Duration.zero,
       ),
     );
   }
