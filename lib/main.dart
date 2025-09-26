@@ -9,11 +9,7 @@ Future<void> main() async {
   await di.init();
   runApp(
     MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => di.sl<ReportBloc>(), // Inyección desde get_it
-        ),
-      ],
+      providers: [BlocProvider(create: (_) => di.sl<ReportBloc>())],
       child: const MyApp(),
     ),
   );

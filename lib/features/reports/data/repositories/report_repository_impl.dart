@@ -1,4 +1,4 @@
-// lib/features/reports/data/repositories/report_repository_impl.dart
+import 'dart:io';
 import '../../domain/entities/report.dart';
 import '../../domain/entities/report_page.dart';
 import '../../domain/repositories/report_repository.dart';
@@ -23,6 +23,24 @@ class ReportRepositoryImpl implements ReportRepository {
   @override
   Future<Report> getReportDetail(String reportNumber) async {
     final model = await remoteDataSource.getReportByNumber(reportNumber);
+    return model.toEntity();
+  }
+
+  @override
+  Future<Report> createReport({
+    required File file,
+    required String detectedDateTime,
+    required String detectedLocationUnit,
+    required String involvedMaterialPersonnel,
+    required String detailedDescription,
+  }) async {
+    final model = await remoteDataSource.createReport(
+      file: file,
+      detectedDateTime: detectedDateTime,
+      detectedLocationUnit: detectedLocationUnit,
+      involvedMaterialPersonnel: involvedMaterialPersonnel,
+      detailedDescription: detailedDescription,
+    );
     return model.toEntity();
   }
 }

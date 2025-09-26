@@ -4,16 +4,18 @@ import '../bloc/report_bloc.dart';
 import '../bloc/report_event.dart';
 import '../bloc/report_state.dart';
 import '../widgets/report_list_item.dart';
+import 'create_report_page.dart';
 import 'package:go_router/go_router.dart';
 
 class ReportsPage extends StatelessWidget {
+  static const name = 'reports-page';
   const ReportsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<ReportBloc>();
 
-    // Disparar la carga solo si el estado es inicial
+    // Disparar la carga inicial si el estado es inicial
     if (bloc.state is ReportsInitial) {
       bloc.add(FetchReports());
     }
@@ -55,8 +57,17 @@ class ReportsPage extends StatelessWidget {
             return Center(child: Text(state.message));
           }
 
-          return const SizedBox(); // Estado inicial vacío
+          return const SizedBox();
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.pushNamed(CreateReportPage.name).then((_) {
+            context.read<ReportBloc>().add(FetchReports());
+          });
+        },
+        tooltip: 'Nuevo reporte',
+        child: const Icon(Icons.add),
       ),
     );
   }

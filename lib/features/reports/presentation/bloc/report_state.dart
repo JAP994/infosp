@@ -1,7 +1,8 @@
-import 'package:infosp/features/reports/domain/entities/report.dart';
+import '../../domain/entities/report.dart';
 
 abstract class ReportState {}
 
+// Estados existentes
 class ReportsInitial extends ReportState {}
 
 class ReportsLoading extends ReportState {}
@@ -26,4 +27,17 @@ class ReportsError extends ReportState {
 class ReportDetailLoaded extends ReportState {
   final Report report;
   ReportDetailLoaded(this.report);
+}
+
+// Estados nuevos para creación
+class ReportCreating extends ReportState {}
+
+class ReportCreatedSuccessfully extends ReportState {
+  final Report report;
+  ReportCreatedSuccessfully(this.report);
+}
+
+class ReportCreationError extends ReportState {
+  final String message;
+  ReportCreationError(this.message);
 }
