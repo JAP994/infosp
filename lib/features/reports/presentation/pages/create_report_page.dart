@@ -13,7 +13,10 @@ class CreateReportPage extends StatelessWidget {
     return BlocProvider.value(
       value: sl<ReportBloc>(), // Reutilizamos el mismo bloc ya inicializado
       child: Scaffold(
-        appBar: AppBar(title: const Text('Registrar ISP')),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Registrar ISP'),
+        ),
         body: const Padding(
           padding: EdgeInsets.all(16),
           child: CreateReportForm(),

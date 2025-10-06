@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'config/theme.dart';
-import 'config/router.dart'; // 👈 importa el archivo donde está appRouter
+import 'config/router.dart';
+import 'core/widgets/custom_scaffold.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -9,9 +10,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Reports App',
+      title: 'Resportes ISP',
       theme: appTheme,
-      routerConfig: appRouter, // 👈 ahora sí se reconoce
+      routerConfig: appRouter,
+      builder: (context, child) {
+        // 👇 Todo child del router se envuelve automáticamente
+        return CustomScaffold(
+          backgroundColor: const Color.fromARGB(
+            255,
+            222,
+            218,
+            213,
+          ), // azul institucional
+          bodyColor: Colors.white, // fondo del body
+          body: child ?? const SizedBox(),
+        );
+      },
     );
   }
 }

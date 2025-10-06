@@ -19,6 +19,7 @@ class ReportDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('Detalle del Reporte'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

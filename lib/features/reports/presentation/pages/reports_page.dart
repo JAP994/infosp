@@ -21,10 +21,13 @@ class ReportsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Reportes')),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text('Reportes ISP'),
+      ),
       body: BlocBuilder<ReportBloc, ReportState>(
         builder: (context, state) {
-          if (state is ReportsLoading && bloc.state is ReportsInitial) {
+          if (state is ReportsLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ReportsLoaded) {
             return Column(
@@ -62,10 +65,8 @@ class ReportsPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // navegación con async/await
           await context.pushNamed(CreateReportPage.name);
 
-          // comprobamos que el contexto sigue montado
           if (context.mounted) {
             context.read<ReportBloc>().add(FetchReports());
           }
