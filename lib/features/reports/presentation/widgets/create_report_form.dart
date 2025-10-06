@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
@@ -180,9 +181,19 @@ class CreateReportFormState extends State<CreateReportForm> {
                 TextFormField(
                   controller: _detectedLocationUnitController,
                   decoration: const InputDecoration(labelText: 'Reparto'),
+                  textCapitalization: TextCapitalization
+                      .characters, // convierte a mayúsculas mientras escribes
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(6), // máximo 6 caracteres
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[A-Za-z]'),
+                    ), // solo letras
+                  ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Campo obligatorio';
+                    } else if (value.length != 6) {
+                      return 'Debe tener exactamente 6 letras';
                     }
                     return null;
                   },
