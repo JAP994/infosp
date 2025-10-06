@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:infosp/config/app_colors.dart';
 import 'package:infosp/core/di/injection_container.dart';
 import 'package:infosp/core/widgets/custom_scaffold.dart';
 import '../bloc/report_bloc.dart';
@@ -15,8 +14,8 @@ class CreateReportPage extends StatelessWidget {
     return BlocProvider.value(
       value: sl<ReportBloc>(),
       child: CustomScaffold(
-        backgroundColor: AppColors.white, // muesca y barra superior/inferior
-        bodyColor: AppColors.greyLight, // fondo interno
+        // backgroundColor: AppColors.white, // muesca y barra superior/inferior
+        // bodyColor: AppColors.greyLight,   // fondo interno
         body: Column(
           children: [
             AppBar(

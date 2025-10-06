@@ -22,8 +22,8 @@ class ReportsPage extends StatelessWidget {
     }
 
     return CustomScaffold(
-      backgroundColor: AppColors.white, // muesca blanca
-      bodyColor: AppColors.greyLight, // fondo gris claro
+      backgroundColor: AppColors.white, // muesca completa
+      bodyColor: AppColors.greyLight, // fondo interno
       body: Column(
         children: [
           AppBar(

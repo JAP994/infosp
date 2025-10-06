@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:infosp/config/app_colors.dart';
 import 'package:infosp/core/widgets/custom_scaffold.dart';
 import '../bloc/report_bloc.dart';
 import '../bloc/report_event.dart';
@@ -16,12 +15,9 @@ class ReportDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<ReportBloc>();
 
-    // Cargar detalle solo si aún no lo tenemos
     bloc.add(FetchReportDetail(reportNumber));
 
     return CustomScaffold(
-      backgroundColor: AppColors.white, // muesca y barra superior/inferior
-      bodyColor: AppColors.greyLight, // fondo interno
       body: Column(
         children: [
           AppBar(
