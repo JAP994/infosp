@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class CustomScaffold extends StatelessWidget {
-  final Widget body;
+class SplashScaffold extends StatelessWidget {
+  final Widget child;
   final Color backgroundColor;
-  final Color bodyColor;
-  final Widget? floatingActionButton;
 
-  const CustomScaffold({
+  const SplashScaffold({
     super.key,
-    required this.body,
+    required this.child,
     this.backgroundColor = const Color(0xFF003366),
-    this.bodyColor = const Color(0xFF003366),
-    this.floatingActionButton,
   });
 
   @override
@@ -29,12 +25,7 @@ class CustomScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       extendBody: true,
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        child: Container(color: bodyColor, child: body),
-      ),
-      floatingActionButton: floatingActionButton,
+      body: SafeArea(top: true, bottom: true, child: child),
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:infosp/config/app_colors.dart';
+import 'package:infosp/core/widgets/custom_scaffold.dart';
 import '../bloc/report_bloc.dart';
 import '../bloc/report_event.dart';
 import '../bloc/report_state.dart';
@@ -17,50 +19,64 @@ class ReportDetailPage extends StatelessWidget {
     // Cargar detalle solo si aún no lo tenemos
     bloc.add(FetchReportDetail(reportNumber));
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const Text('Detalle del Reporte'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(), // Regresar manteniendo la lista
-        ),
-      ),
-      body: BlocBuilder<ReportBloc, ReportState>(
-        builder: (context, state) {
-          if (state is ReportsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is ReportDetailLoaded) {
-            final report = state.report;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
-                children: [
-                  Text(
-                    'Número: ${report.reportNumber}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('Ubicación: ${report.detectedLocationUnit}'),
-                  const SizedBox(height: 8),
-                  Text('Involucrado: ${report.involvedMaterialPersonnel}'),
-                  const SizedBox(height: 8),
-                  Text('Descripción: ${report.detailedDescription}'),
-                  const SizedBox(height: 8),
-                  Text('Evidencia: ${report.evidenceFile}'),
-                  const SizedBox(height: 8),
-                  Text('Fecha detectado: ${report.detectedDateTime}'),
-                  const SizedBox(height: 8),
-                  Text('Fecha reporte: ${report.reportDateTime}'),
-                ],
-              ),
-            );
-          } else if (state is ReportsError) {
-            return Center(child: Text(state.message));
-          }
-
-          return const SizedBox();
-        },
+    return CustomScaffold(
+      backgroundColor: AppColors.white, // muesca y barra superior/inferior
+      bodyColor: AppColors.greyLight, // fondo interno
+      body: Column(
+        children: [
+          AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: const Text(
+              'Detalle del Reporte',
+              style: TextStyle(color: Colors.black),
+            ),
+            iconTheme: const IconThemeData(color: Colors.black),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.pop(),
+            ),
+          ),
+          Expanded(
+            child: BlocBuilder<ReportBloc, ReportState>(
+              builder: (context, state) {
+                if (state is ReportsLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is ReportDetailLoaded) {
+                  final report = state.report;
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ListView(
+                      children: [
+                        Text(
+                          'Número: ${report.reportNumber}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text('Ubicación: ${report.detectedLocationUnit}'),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Involucrado: ${report.involvedMaterialPersonnel}',
+                        ),
+                        const SizedBox(height: 8),
+                        Text('Descripción: ${report.detailedDescription}'),
+                        const SizedBox(height: 8),
+                        Text('Evidencia: ${report.evidenceFile}'),
+                        const SizedBox(height: 8),
+                        Text('Fecha detectado: ${report.detectedDateTime}'),
+                        const SizedBox(height: 8),
+                        Text('Fecha reporte: ${report.reportDateTime}'),
+                      ],
+                    ),
+                  );
+                } else if (state is ReportsError) {
+                  return Center(child: Text(state.message));
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
