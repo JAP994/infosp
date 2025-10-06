@@ -24,6 +24,40 @@ class CreateReportFormState extends State<CreateReportForm> {
   final _involvedMaterialPersonnelController = TextEditingController();
   final _detailedDescriptionController = TextEditingController();
 
+  String _repartoError = ''; // mensaje de error en tiempo real
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
+    });
+    // Quitar el foco inicial para que no abra teclado automáticamente
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
+    });
+
+    // Escuchar cambios en Reparto para forzar mayúsculas y mostrar mensaje
+    _detectedLocationUnitController.addListener(() {
+      final text = _detectedLocationUnitController.text;
+      if (text != text.toUpperCase()) {
+        _detectedLocationUnitController.value = _detectedLocationUnitController
+            .value
+            .copyWith(
+              text: text.toUpperCase(),
+              selection: _detectedLocationUnitController.selection,
+            );
+        setState(() {
+          _repartoError = 'Solo se permiten mayúsculas';
+        });
+      } else {
+        setState(() {
+          _repartoError = '';
+        });
+      }
+    });
+  }
+
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -128,133 +162,137 @@ class CreateReportFormState extends State<CreateReportForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ReportBloc, ReportState>(
-      listener: (context, state) {
-        if (state is ReportCreatedSuccessfully) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Informe enviado correctamente'),
-              backgroundColor: Colors.green,
+    return GestureDetector(
+      onTap: () =>
+          FocusScope.of(context).unfocus(), // Cierra teclado al tocar fuera
+      child: BlocConsumer<ReportBloc, ReportState>(
+        listener: (context, state) {
+          if (state is ReportCreatedSuccessfully) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Informe enviado correctamente'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            _formKey.currentState!.reset();
+            setState(() => _selectedFile = null);
+            _detectedDateTimeController.clear();
+            _detectedLocationUnitController.clear();
+            _involvedMaterialPersonnelController.clear();
+            _detailedDescriptionController.clear();
+          } else if (state is ReportCreationError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error: ${state.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is ReportCreating;
+          return Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: _pickDateTime,
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        controller: _detectedDateTimeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Fecha y hora detectada',
+                          suffixIcon: Icon(Icons.calendar_today),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Campo obligatorio';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _detectedLocationUnitController,
+                    decoration: InputDecoration(
+                      labelText: 'Reparto',
+                      errorText: _repartoError.isEmpty ? null : _repartoError,
+                    ),
+                    textCapitalization: TextCapitalization.characters,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(6),
+                      FilteringTextInputFormatter.allow(RegExp(r'[A-Z]')),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obligatorio';
+                      } else if (value.length != 6) {
+                        return 'Debe tener exactamente 6 letras';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _involvedMaterialPersonnelController,
+                    decoration: const InputDecoration(
+                      labelText: 'Materiales o personal involucrado',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _detailedDescriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Descripción detallada',
+                    ),
+                    maxLines: 4,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _pickFile,
+                        child: const Text('Seleccionar archivo'),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          _selectedFile != null
+                              ? _selectedFile!.path.split('/').last
+                              : 'Ningún archivo seleccionado',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: _submit,
+                          child: const Text('Enviar ISP'),
+                        ),
+                ],
+              ),
             ),
           );
-          _formKey.currentState!.reset();
-          setState(() => _selectedFile = null);
-          _detectedDateTimeController.clear();
-          _detectedLocationUnitController.clear();
-          _involvedMaterialPersonnelController.clear();
-          _detailedDescriptionController.clear();
-        } else if (state is ReportCreationError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${state.message}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
-      builder: (context, state) {
-        final isLoading = state is ReportCreating;
-        return Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: _pickDateTime,
-                  child: AbsorbPointer(
-                    child: TextFormField(
-                      controller: _detectedDateTimeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Fecha y hora detectada',
-                        suffixIcon: Icon(Icons.calendar_today),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo obligatorio';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _detectedLocationUnitController,
-                  decoration: const InputDecoration(labelText: 'Reparto'),
-                  textCapitalization: TextCapitalization
-                      .characters, // convierte a mayúsculas mientras escribes
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(6), // máximo 6 caracteres
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[A-Za-z]'),
-                    ), // solo letras
-                  ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Campo obligatorio';
-                    } else if (value.length != 6) {
-                      return 'Debe tener exactamente 6 letras';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _involvedMaterialPersonnelController,
-                  decoration: const InputDecoration(
-                    labelText: 'Materiales o personal involucrado',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Campo obligatorio';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _detailedDescriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Descripción detallada',
-                  ),
-                  maxLines: 4,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Campo obligatorio';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: _pickFile,
-                      child: const Text('Seleccionar archivo'),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        _selectedFile != null
-                            ? _selectedFile!.path.split('/').last
-                            : 'Ningún archivo seleccionado',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: _submit,
-                        child: const Text('Enviar ISP'),
-                      ),
-              ],
-            ),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }
