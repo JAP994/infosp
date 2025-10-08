@@ -15,6 +15,7 @@ class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
+  late final Animation<double> _fadeAnimation;
 
   @override
   void initState() {
@@ -28,13 +29,22 @@ class _SplashPageState extends State<SplashPage>
     _scaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _controller.forward();
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
-    Future.delayed(const Duration(seconds: 2), () {
+    // Esperamos a que el primer frame se dibuje y luego iniciamos animación
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 50));
       if (!mounted) return;
-      GoRouter.of(context).go('/');
+
+      _controller.forward().whenComplete(() {
+        // Redirigimos al home cuando termine la animación
+        GoRouter.of(context).go('/');
+      });
     });
   }
 
@@ -47,14 +57,17 @@ class _SplashPageState extends State<SplashPage>
   @override
   Widget build(BuildContext context) {
     return SplashScaffold(
-      backgroundColor: AppColors.navyBlue, // azul marino para la muesca
+      backgroundColor: AppColors.navyBlue,
       child: Center(
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: Image.asset(
-            'assets/icon/app_icon2.png',
-            width: 150,
-            height: 150,
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: Image.asset(
+              'assets/icon/app_icon2.png',
+              width: 150,
+              height: 150,
+            ),
           ),
         ),
       ),
